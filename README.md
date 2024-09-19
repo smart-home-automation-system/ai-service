@@ -4,7 +4,7 @@
 ![GitHub Release Date - Published_At](https://img.shields.io/github/release-date/smart-home-automation-system/ai-service?style=plastic)
 ![GitHub Release](https://img.shields.io/github/v/release/smart-home-automation-system/ai-service?style=plastic)
 
-General purpose of this service its gateway to AMX control system.
+General purpose for AI taska
 
 ![GitHub top language](https://img.shields.io/github/languages/top/smart-home-automation-system/ai-service?style=plastic)
 ![Java](https://img.shields.io/badge/java-17-yellow?style=plastic)
