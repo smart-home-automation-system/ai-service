@@ -18,11 +18,18 @@ logging:
   level:
     org.zalando.logbook: trace
 
+langchain4j:
+  open-ai:
+    chat-model:
+      api-key: ${openai-token}
+      model-name: gpt-4o-mini
+
 ---
 
 spring:
-  profiles:
-    active: local
+  config:
+    activate:
+      on-profile: local
 
 server:
   port: 6004
