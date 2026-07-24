@@ -1,9 +1,10 @@
 package cloud.cholewa.ai.service;
 
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+
+import java.util.stream.Collectors;
 
 @Service
 public class AiBasicService {
@@ -14,7 +15,11 @@ public class AiBasicService {
         this.chatClient = chatClientBuilder.build();
     }
 
-    public Mono<ResponseEntity<Object>> sendMessage(final String message) {
-        return Mono.just(ResponseEntity.ok(chatClient.prompt().user(message).call().content()));
+    public Mono<String> sendMessage(final String message) {
+        return chatClient.prompt()
+                .user(message)
+                .stream()
+                .content()
+                .collect(Collectors.joining());
     }
 }
