@@ -10,8 +10,7 @@ spring:
     openai:
       api-key: ${openai-token}
       chat:
-        options:
-          model: gpt-4o-mini
+        model: gpt-4o-mini
 
 server:
   port: 6200
