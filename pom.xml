@@ -27,6 +27,9 @@
 		<sonar.exclusions>**/model/**/*</sonar.exclusions>
 
 		<logbook.version>4.0.4</logbook.version>
+		<!-- Spring starters are only published under the -betaNN scheme (the @AiService
+		     integration is still marked experimental); 1.x drops openai4j/retrofit/okhttp -->
+		<langchain4j.version>1.18.0-beta28</langchain4j.version>
 
 		<!--  internal dependencies versions-->
 		<cholewa-commons.version>1.1.0</cholewa-commons.version>
@@ -58,12 +61,12 @@
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-spring-boot-starter</artifactId>
-			<version>0.34.0</version>
+			<version>${langchain4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-open-ai-spring-boot-starter</artifactId>
-			<version>0.34.0</version>
+			<version>${langchain4j.version}</version>
 		</dependency>
 
 		<!-- required by logbook's WebFluxNettyClientConfiguration; logbook declares it optional -->
