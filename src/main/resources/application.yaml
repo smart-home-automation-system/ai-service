@@ -5,24 +5,23 @@ spring:
   profiles:
     active: home
   webflux:
-    base-path: "/home"
+    base-path: "/home/ai"
+  ai:
+    openai:
+      api-key: ${openai-token}
+      chat:
+        model: gpt-4o-mini
 
 server:
   port: 6200
 
 logbook:
   format:
-    style: http
+    style: json
 
 logging:
   level:
     org.zalando.logbook: trace
-
-langchain4j:
-  open-ai:
-    chat-model:
-      api-key: ${openai-token}
-      model-name: gpt-4o-mini
 
 ---
 
@@ -36,3 +35,7 @@ server:
 management:
   server:
     port: 8004
+
+logbook:
+  format:
+    style: http

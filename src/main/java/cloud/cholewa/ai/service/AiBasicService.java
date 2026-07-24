@@ -1,17 +1,25 @@
 package cloud.cholewa.ai.service;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.util.stream.Collectors;
+
 @Service
-@RequiredArgsConstructor
 public class AiBasicService {
 
-    private final AiAssistant aiAssistant;
+    private final ChatClient chatClient;
 
-    public Mono<ResponseEntity<Object>> sendMessage(final String message) {
-        return Mono.just(ResponseEntity.ok(aiAssistant.chat(message)));
+    public AiBasicService(final ChatClient.Builder chatClientBuilder) {
+        this.chatClient = chatClientBuilder.build();
+    }
+
+    public Mono<String> sendMessage(final String message) {
+        return chatClient.prompt()
+                .user(message)
+                .stream()
+                .content()
+                .collect(Collectors.joining());
     }
 }
