@@ -2,6 +2,7 @@ package cloud.cholewa.ai.api;
 
 import cloud.cholewa.ai.service.AiBasicService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,7 +15,7 @@ public class AiController {
 
     private final AiBasicService service;
 
-    @PostMapping
+    @PostMapping(produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.TEXT_PLAIN_VALUE)
     Mono<ResponseEntity<String>> sendMessage(@RequestBody final String ask) {
         return service.sendMessage(ask).map(ResponseEntity::ok);
     }
