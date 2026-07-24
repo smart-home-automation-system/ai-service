@@ -26,8 +26,9 @@ class AiBasicServiceTest {
 
         final AiBasicService service = new AiBasicService(builder);
 
-        StepVerifier.create(service.sendMessage("ping"))
-                .expectNext("pong")
-                .verifyComplete();
+        service.sendMessage("ping")
+            .as(StepVerifier::create)
+            .expectNext("pong")
+            .verifyComplete();
     }
 }
