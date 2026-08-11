@@ -6,6 +6,10 @@ spring:
     active: home
   webflux:
     base-path: "/home/ai"
+  reactor:
+    # default LIMITED restores ThreadLocals only in "tap" and "handle", so traceId would be
+    # missing from the MDC of every log statement inside a reactive chain
+    context-propagation: auto
   ai:
     openai:
       api-key: ${openai-token:dummy}
@@ -14,12 +18,34 @@ spring:
 
 server:
   port: 6200
+management:
+  server:
+    port: 8200
+  endpoint:
+    health:
+      # a 404 on the readiness path crash-loops the pod, so the probe groups are pinned here
+      # instead of relying on Boot detecting the Kubernetes platform — and kept in the shared
+      # document, where the paths can be exercised locally on 8004 before the manifest ships
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  tracing:
+    sampling:
+      # default 0.1; a home system generates so little traffic that sampling everything is free,
+      # and a partially sampled trace is useless when it is the only record of a request
+      probability: 1.0
 
 logbook:
   format:
     style: json
 
 logging:
+  structured:
+    format:
+      console: logstash
   level:
     org.zalando.logbook: trace
 
@@ -39,3 +65,8 @@ management:
 logbook:
   format:
     style: http
+
+logging:
+  structured:
+    format:
+      console: ""
