@@ -3,8 +3,9 @@
 `cloud.cholewa:ai-service` — the smart home's **AI integration** service: a thin reactive
 (WebFlux) bridge that forwards a prompt to OpenAI and returns the model's reply. Java 21,
 Spring Boot 4.1.0 (`spring-boot-starter-parent`), Maven. Local port **6004** (management
-**8004**); in the deployed `home` profile it listens on **6200** like every service
-(k8s `containerPort`). Docker image `magikabdul/ai-service`. Currently `0.0.1-SNAPSHOT`
+**8004**); in the deployed `home` profile it listens on **6200** with Actuator on **8200**
+(HAS-165), where the Kubernetes probes and the Prometheus scrape go — the ingress routes only
+6200. Docker image `magikabdul/ai-service`. Currently `0.0.1-SNAPSHOT`
 (migrated to Java 21 / Boot 4.1 under HAS-125).
 
 Org-wide conventions and working rules (PR flow, branch naming `feature/HAS-<n>`,
@@ -50,9 +51,19 @@ Framework 7). Do not reintroduce langchain4j.
 ## Error handling
 
 `ExceptionHandlerConfig` registers `cholewa-commons`' `GlobalErrorExceptionHandler`
-(`@Order(-2)`) so OpenAI failures render as the shared `Errors` JSON contract — the same
-pattern as `notification-service`. No custom `ExceptionProcessor` yet (no domain
-exceptions). `cholewa-commons` 1.1.0 is the only shared-library dependency.
+(`@Order(-2)`) so failures render as the shared `Errors` JSON contract — the same pattern as
+`notification-service`. No custom `ExceptionProcessor` yet (no domain exceptions).
+`cholewa-commons` 1.1.0 is the only shared-library dependency.
+
+**The provider's error text never reaches the response or the logs** (HAS-165).
+`AiBasicService` maps every failure of the `ChatClient` call to
+`ResponseStatusException(BAD_GATEWAY, "AI provider call failed")` and logs the exception
+*type*, not its message. The reason is concrete: OpenAI quotes the rejected credential back
+in its message (`Incorrect API key provided: …`), `DefaultExceptionProcessor` puts an
+unhandled message into the response body as `details`, and the cluster logs are shipped to
+Loki — so an echoed key would end up stored and searchable. Keep that mapping in place; if a
+failure ever needs to be distinguished by the caller, add a typed `ExceptionProcessor` rather
+than passing the upstream text through.
 
 ## Build, tests & gotchas
 
