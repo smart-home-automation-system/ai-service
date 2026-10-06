@@ -12,7 +12,7 @@
 
 ![GitHub top language](https://img.shields.io/github/languages/top/smart-home-automation-system/ai-service?style=plastic)
 ![Java](https://img.shields.io/badge/java-21-yellow?style=plastic)
-![SpringBoot](https://img.shields.io/badge/SpringBoot-4.1.0-blue?style=plastic)
+![SpringBoot](https://img.shields.io/badge/SpringBoot-4.1.1-blue?style=plastic)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=smart-home-automation-system_ai-service&metric=coverage)](https://sonarcloud.io/summary/new_code?id=smart-home-automation-system_ai-service)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=smart-home-automation-system_ai-service&metric=ncloc)](https://sonarcloud.io/summary/new_code?id=smart-home-automation-system_ai-service)
 

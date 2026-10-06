@@ -2,7 +2,7 @@
 
 `cloud.cholewa:ai-service` — the smart home's **AI integration** service: a thin reactive
 (WebFlux) bridge that forwards a prompt to OpenAI and returns the model's reply. Java 21,
-Spring Boot 4.1.0 (`spring-boot-starter-parent`), Maven. Local port **6004** (management
+Spring Boot 4.1.1 (`spring-boot-starter-parent`), Maven. Local port **6004** (management
 **8004**); in the deployed `home` profile it listens on **6200** with Actuator on **8200**
 (HAS-165), where the Kubernetes probes and the Prometheus scrape go — the ingress routes only
 6200. Docker image `magikabdul/ai-service`. Currently `0.0.1-SNAPSHOT`
@@ -53,7 +53,11 @@ Framework 7). Do not reintroduce langchain4j.
 `ExceptionHandlerConfig` registers `cholewa-commons`' `GlobalErrorExceptionHandler`
 (`@Order(-2)`) so failures render as the shared `Errors` JSON contract — the same pattern as
 `notification-service`. No custom `ExceptionProcessor` yet (no domain exceptions).
-`cholewa-commons` 1.1.0 is the only shared-library dependency.
+`cholewa-commons` (1.7.0 since HAS-182) is the only shared-library dependency. Of what the
+library auto-configures, the pooled R2DBC `ConnectionFactory` stays inactive here (no R2DBC on
+the classpath, no `database.host`) and the English Bean Validation messages are on but have
+nothing to act on — the one endpoint takes a plain `String`, no constraint anywhere. The first
+validated input brings the consumer-side locale test described in `organization.md`.
 
 **The provider's error text never reaches the response or the logs** (HAS-165).
 `AiBasicService` maps every failure of the `ChatClient` call to
@@ -81,7 +85,15 @@ than passing the upstream text through.
   `properties`) with **`@{argLine}` first** so JaCoCo's agent survives — do not drop that
   prefix or coverage silently drops to 0% and the Sonar gate fails.
 - logbook's WebFlux autoconfig needs the optional `spring-boot-http-client` module on
-  Boot 4.1 (already a dependency) — the context will not start without it.
+  Boot 4.1 (already a dependency) — the context will not start without it. logbook is 4.2.0
+  since HAS-182; it declares apiguardian 1.1.2 itself, so the old `apiguardian-api` pin is gone.
+- **Tests run under the `test` profile** (HAS-182): surefire activates it for every class
+  (`systemPropertyVariables`), and the `test` document of `application.yaml` switches the
+  console back to plain text and logbook to the `http` style — otherwise the `@SpringBootTest`
+  context installs the logstash encoder for every test that follows in the same JVM.
+  `AiServiceApplicationTest` also carries `@ActiveProfiles("test")`, because the surefire
+  property does not exist when the class is started from an IDE. No test calls OpenAI: the
+  key falls back to `dummy` and the `ChatClient` is mocked.
 
 ## CI/CD
 
