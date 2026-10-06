@@ -91,9 +91,13 @@ than passing the upstream text through.
   (`systemPropertyVariables`), and the `test` document of `application.yaml` switches the
   console back to plain text and logbook to the `http` style — otherwise the `@SpringBootTest`
   context installs the logstash encoder for every test that follows in the same JVM.
-  `AiServiceApplicationTest` also carries `@ActiveProfiles("test")`, because the surefire
-  property does not exist when the class is started from an IDE. No test calls OpenAI: the
-  key falls back to `dummy` and the `ChatClient` is mocked.
+  Both classes that start a Spring context (`AiServiceApplicationTest`, `AiControllerTest`)
+  also carry `@ActiveProfiles("test")`, because the surefire property does not exist when a
+  class is started from an IDE — a new context-starting test needs it too.
+- **No test calls OpenAI, and none should.** `AiBasicServiceTest` mocks the `ChatClient`.
+  `AiServiceApplicationTest` does not: it builds the real client from `${openai-token:dummy}`
+  and stays offline only because `contextLoads()` never uses it — on a machine where
+  `openai-token` is set, a call added to that class would be a live, billed request.
 
 ## CI/CD
 
